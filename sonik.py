@@ -14,8 +14,15 @@ def main():
     payloads = load_payloads(args.payloads)
     urls = load_urls(args.list)
 
-    print(Fore.CYAN + "[*] Starti*]()")
+    print(Fore.CYAN + "[*] Starting XSS scanner..." + Style.RESET_ALL)
+    scanner_xss(urls, payloads)
+
+    print(Fore.CYAN + "[*] Requests finished. Starting response analysis..." + Style.RESET_ALL)
+    analysis_response(payloads)
+
+    print(Fore.GREEN + "[*] Analysis finished." + Style.RESET_ALL)
 
     
 if __name__ == "__main__":
+
     main()
