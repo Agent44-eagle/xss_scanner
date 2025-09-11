@@ -14,7 +14,7 @@ This project provides a simple and fast tool to detect **XSS (Cross-Site Scripti
 ## ⚙️ Installation
 
 ```bash
-git clone https://github.com/username/xss_scanner.git
+git clone https://github.com/Agent44-eagle/xss_scanner.git
 cd xss_scanner
 pip install -r requirements.txt
 
@@ -26,5 +26,6 @@ Simply provide your URLs file and payloads file, then run:
 
 ```bash
 python sonik.py -l urls.txt -p payloads.txt
+
 
 
