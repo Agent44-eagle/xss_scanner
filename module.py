@@ -119,10 +119,10 @@ def analysis_response(payloads):
                 medium_risk = True
 
             if high_risk:
-                print(Fore.RED + f"[HIGH] Payload detected: {payload}" + Style.RESET_ALL)
-            elif medium_risk:
-                print(Fore.YELLOW + f"[MEDIUM] Payload detected: {payload}" + Style.RESET_ALL)
-            elif low_risk:
-                print(Fore.GREEN + f"[LOW/IGNORED] Payload detected (encoded/escaped): {payload}" + Style.RESET_ALL)
-            
+            print(Fore.RED + f"[HIGH] {r['type']} | {r['url']} | Status: {r['status']} | Payload: {r['payload']}" + Style.RESET_ALL)
+        elif medium_risk:
+            print(Fore.YELLOW + f"[MEDIUM] {r['type']} | {r['url']} | Status: {r['status']} | Payload: {r['payload']}" + Style.RESET_ALL)
+        elif low_risk:
+            print(Fore.GREEN + f"[LOW/IGNORED] {r['type']} | {r['url']} | Status: {r['status']} | Payload: {r['payload']}" + Style.RESET_ALL)
+
             
