@@ -28,6 +28,7 @@ def load_urls(file_path):
 def scanner_xss(urls, payloads):
     session = FuturesSession(max_workers=20)
     futures = []
+    results = []  # store url + type + response text
 
     for url in urls:
         parsed = urllib.parse.urlparse(url)
@@ -42,90 +43,70 @@ def scanner_xss(urls, payloads):
 
                 # GET
                 future_get = session.get(inject_url, timeout=10)
-                futures.append((future_get, "GET", inject_url))
+                futures.append((future_get, "GET", inject_url, payload))
 
                 # POST
                 post_data = {p: (payload if p == param else query_params[p][0]) for p in query_params}
                 future_post = session.post(base_url, data=post_data, timeout=10)
-                futures.append((future_post, "POST", base_url, post_data))
+                futures.append((future_post, "POST", base_url, payload))
 
     for item in futures:
-        future, rtype = item[0], item[1]
+        future, rtype, target_url, payload = item[0], item[1], item[2], item[3]
 
         try:
             response = future.result()
-            if rtype == "GET":
-                with open("response_get.txt", "a", encoding="utf-8") as out:
-                    out.write(f"\n====Response GET: {item[2]}====\n")
-                    out.write(f"Status: {response.status_code}\n")
-                    out.write(response.text[:1000] + "\n")
-                print(f"[+] GET {item[2]} Status: {response.status_code}")
-            else:  # POST
-                post_data = item[3]
-                with open("response_post.txt", "a", encoding="utf-8") as out:
-                    out.write(f"\n====Response POST: {item[2]}====\n")
-                    out.write(f"Data: {post_data}\n")
-                    out.write(f"Status: {response.status_code}\n")
-                    out.write(response.text[:1000] + "\n")
-                print(f"[+] POST {item[2]} Status: {response.status_code}")
+            results.append({
+                "type": rtype,
+                "url": target_url,
+                "payload": payload,
+                "content": response.text.lower()
+            })
+
+            print(f"[+] {rtype} {target_url} Status: {response.status_code}")
+
         except Exception as e:
             print(Fore.RED + f"[X] {rtype} request error: {e}" + Style.RESET_ALL)
 
+    return results
 
-def analysis_response(payloads):
-    with open("response_post.txt", "r", encoding="utf-8") as f_post, \
-         open("response_get.txt", "r", encoding="utf-8") as f_get:
 
-        post_content = f_post.read().lower()
-        get_content = f_get.read().lower()
+def analysis_response(results, payloads):
+    for r in results:
+        content = html.unescape(re.sub(r'\s+', '', r["content"]).strip())
+        url = r["url"]
+        payload = r["payload"].lower()
 
-    post_content = html.unescape(re.sub(r'\s+', '', post_content).strip())
-    get_content = html.unescape(re.sub(r'\s+', '', get_content).strip())
+        if payload not in content:
+            continue
 
-    responses = [{"type": "POST", "content": post_content},
-                 {"type": "GET", "content": get_content}]
+        high_risk = medium_risk = low_risk = False
 
-    for r in responses:
-        content = r["content"]
-        print(f"\n---Analyzing {r['type']} responses---")
-        for payload in payloads:
-            payload_lower = payload.lower()
-            if payload_lower not in content:
-                continue
+        high_patterns = [
+            r"<script.*?>.*?" + re.escape(payload) + r".*?</script>",
+            r"on\w+\s*=\s*['\"].*?" + re.escape(payload) + r".*?['\"]",
+            r'href\s*=\s*["\']javascript:.*?' + re.escape(payload),
+            r'style\s*=\s*["\'].*?expression\(.*?' + re.escape(payload) + r'.*?\).*?["\']',
+            r'(src|data)\s*=\s*["\']data:text/html.*?' + re.escape(payload) + r'.*?["\']',
+            r'var\s+\w+\s*=\s*["\'].*?' + re.escape(payload) + r'.*?["\']'
+        ]
 
-            high_risk = medium_risk = low_risk = False
+        # Low risk
+        if re.search(re.escape(html.escape(payload)), content) or '\\' + payload in content:
+            low_risk = True
 
-            high_patterns = [
-                r"<script.*?>.*?" + re.escape(payload_lower) + r".*?</script>",
-                r"on\w+\s*=\s*['\"].*?" + re.escape(payload_lower) + r".*?['\"]",
-                r'href\s*=\s*["\']javascript:.*?' + re.escape(payload_lower),
-                r'style\s*=\s*["\'].*?expression\(.*?' + re.escape(payload_lower) + r'.*?\).*?["\']',
-                r'(src|data)\s*=\s*["\']data:text/html.*?' + re.escape(payload_lower) + r'.*?["\']',
-                r'var\s+\w+\s*=\s*["\'].*?' + re.escape(payload_lower) + r'.*?["\']'
-            ]
+        # High risk
+        for pattern in high_patterns:
+            if re.search(pattern, content, re.IGNORECASE):
+                high_risk = True
+                break
 
-            # Low risk
-            if re.search(re.escape(html.escape(payload_lower)), content) or '\\' + payload_lower in content:
-                low_risk = True
+        # Medium fallback
+        if not high_risk and not low_risk:
+            medium_risk = True
 
-            # High risk
-            for pattern in high_patterns:
-                if re.search(pattern, content, re.IGNORECASE):
-                    high_risk = True
-                    break
-
-            # Medium fallback
-            if not high_risk and not low_risk:
-                medium_risk = True
-
-            if high_risk:
-                print(Fore.RED + f"[HIGH] {r['type']} | {r['url']} | Status: {r['status']} | Payload: {r['payload']}" + Style.RESET_ALL)
-            elif medium_risk:
-                print(Fore.YELLOW + f"[MEDIUM] {r['type']} | {r['url']} | Status: {r['status']} | Payload: {r['payload']}" + Style.RESET_ALL)
-            elif low_risk:
-                print(Fore.GREEN + f"[LOW/IGNORED] {r['type']} | {r['url']} | Status: {r['status']} | Payload: {r['payload']}" + Style.RESET_ALL)
-                
-                
-            
-            
-        
+        if high_risk:
+            print(Fore.RED + f"[HIGH] Payload detected: {payload} in {url}" + Style.RESET_ALL)
+        elif medium_risk:
+            print(Fore.YELLOW + f"[MEDIUM] Payload detected: {payload} in {url}" + Style.RESET_ALL)
+        elif low_risk:
+            print(Fore.GREEN + f"[LOW/IGNORED] Payload detected (encoded/escaped): {payload} in {url}" + Style.RESET_ALL)
