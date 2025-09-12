@@ -18,7 +18,7 @@ def main():
     scanner_xss(urls, payloads)
 
     print(Fore.CYAN + "[*] Requests finished. Starting response analysis..." + Style.RESET_ALL)
-    analysis_response(payloads)
+    analysis_response(results,payloads)
 
     print(Fore.GREEN + "[*] Analysis finished." + Style.RESET_ALL)
 
@@ -26,3 +26,4 @@ def main():
 if __name__ == "__main__":
 
     main()
+
