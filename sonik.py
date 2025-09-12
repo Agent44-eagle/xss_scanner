@@ -15,10 +15,10 @@ def main():
     urls = load_urls(args.list)
 
     print(Fore.CYAN + "[*] Starting XSS scanner..." + Style.RESET_ALL)
-    scanner_xss(urls, payloads)
+    results = scanner_xss(urls, payloads)  # <-- capture results
 
     print(Fore.CYAN + "[*] Requests finished. Starting response analysis..." + Style.RESET_ALL)
-    analysis_response(results,payloads)
+    analysis_response(results, payloads)    # <-- pass results here
 
     print(Fore.GREEN + "[*] Analysis finished." + Style.RESET_ALL)
 
@@ -26,4 +26,5 @@ def main():
 if __name__ == "__main__":
 
     main()
+
 
