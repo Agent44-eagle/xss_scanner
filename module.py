@@ -95,18 +95,30 @@ def analysis_response(results, payloads):
             low_risk = True
 
         # High risk
+        match_snippet = ""
         for pattern in high_patterns:
-            if re.search(pattern, content, re.IGNORECASE):
+            match = re.search(pattern, content, re.IGNORECASE)
+            if match:
                 high_risk = True
+                start = max(match.start() - 30, 0)
+                end = min(match.end() + 30, len(content))
+                match_snippet = content[start:end]
                 break
 
         # Medium fallback
         if not high_risk and not low_risk:
             medium_risk = True
+            # optionally take a snippet for medium risk too
+            snippet_index = content.find(payload)
+            if snippet_index != -1:
+                start = max(snippet_index - 30, 0)
+                end = min(snippet_index + len(payload) + 30, len(content))
+                match_snippet = content[start:end]
 
+        # Print with URL + snippet
         if high_risk:
-            print(Fore.RED + f"[HIGH] Payload detected: {payload} in {url}" + Style.RESET_ALL)
+            print(Fore.RED + f"[HIGH] Payload detected: {payload} in {url}\n  Evidence: {match_snippet}" + Style.RESET_ALL)
         elif medium_risk:
-            print(Fore.YELLOW + f"[MEDIUM] Payload detected: {payload} in {url}" + Style.RESET_ALL)
+            print(Fore.YELLOW + f"[MEDIUM] Payload detected: {payload} in {url}\n  Evidence: {match_snippet}" + Style.RESET_ALL)
         elif low_risk:
             print(Fore.GREEN + f"[LOW/IGNORED] Payload detected (encoded/escaped): {payload} in {url}" + Style.RESET_ALL)
