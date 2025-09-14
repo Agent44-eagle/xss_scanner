@@ -117,6 +117,7 @@ def analysis_response(results, payloads):
         elif medium_risk:
             print(Fore.YELLOW + f"[MEDIUM] Payload detected: {payload} in {url}" +Style.RESET_ALL + "\n" + Fore.CYAN + f"Evidence:{match_snippet} " + Style.RESET_ALL)
         elif low_risk:
-            print(Fore.GREEN + f"[LOW/IGNORED] Payload detected (encoded/escaped): {payload} in {url}" + "\n" + Fore.ORANGE + " Evidence:{match_snippet} " + Style.RESET_ALL) 
+            print(Fore.GREEN + f"[LOW/IGNORED] Payload detected (encoded/escaped): {payload} in {url}" + "\n" + Fore.ORANGE + " Evidence:{match_snippet} " + Style.RESET_ALL)  
+
 
 
