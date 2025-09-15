@@ -6,7 +6,7 @@ from module import load_payloads, load_urls, scanner_xss, analysis_response
 def main():
     parser = argparse.ArgumentParser(description="XSS Scanner Tool (Asynchronous)")
     parser.add_argument("-l", "--list", required=True, help="File containing list of URLs")
-    parser.add_argument("-p", "--payloads", default="payloads.txt", help="File containing payloads")
+    parser.add_argument("-p", "--moon", default="moon.txt", help="File containing payloads")
     args = parser.parse_args()
 
     print(Fore.BLUE + "Welcome to Sonik XSS Scanner" + Style.RESET_ALL)
@@ -26,5 +26,6 @@ def main():
 if __name__ == "__main__":
 
     main()
+
 
 
