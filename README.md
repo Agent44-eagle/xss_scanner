@@ -25,7 +25,8 @@ pip install -r requirements.txt
 Simply provide your URLs file and payloads file, then run:
 
 ```bash
-python sonik.py -l urls.txt -p payloads.txt
+python sonik.py -l urls.txt -p moon.txt
+
 
 
 
