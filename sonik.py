@@ -11,7 +11,7 @@ def main():
 
     print(Fore.BLUE + "Welcome to Sonik XSS Scanner" + Style.RESET_ALL)
 
-    payloads = load_payloads(args.payloads)
+    payloads = load_payloads(args.moon)
     urls = load_urls(args.list)
 
     print(Fore.CYAN + "[*] Starting XSS scanner..." + Style.RESET_ALL)
@@ -26,6 +26,7 @@ def main():
 if __name__ == "__main__":
 
     main()
+
 
 
 
