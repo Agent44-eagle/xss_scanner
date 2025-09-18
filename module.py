@@ -3,15 +3,16 @@ import re
 import urllib.parse
 from urllib.parse import urlparse
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from colorama import Fore, Style
+from colorama import Fore, Style, init
 from requests_html import HTMLSession
 import requests
 
+init(autoreset=True)
 
+# ----------------- Load payloads / URLs -----------------
 def load_payloads(file_path):
     with open(file_path, "r", encoding="utf-8") as f:
         return [p.strip() for p in f if p.strip()]
-
 
 def load_urls(file_path):
     urls = []
@@ -25,7 +26,7 @@ def load_urls(file_path):
                 urls.append(url)
     return urls
 
-
+# ----------------- DOM Scanner -----------------
 def scanner_Dom(urls):
     session = HTMLSession()
     for url in urls:
@@ -38,71 +39,52 @@ def scanner_Dom(urls):
         except Exception as e:
             print(f"Error with {url}: {e}")
 
-
+# ----------------- Encoding Variants -----------------
 def generate_encodings(payload):
-    encoded_payloads = [
-        payload,  # original
-        urllib.parse.quote(payload),  # URL encoded
-        html.escape(payload),  # HTML encoded
-        ''.join([f'\\u{ord(c):04x}' for c in payload])  # Unicode encoded
+    return [
+        payload,
+        urllib.parse.quote(payload),
+        html.escape(payload),
+        ''.join([f'\\u{ord(c):04x}' for c in payload])
     ]
-    return encoded_payloads
-
 
 def _generate_detection_variants(s):
-    variants = set()
-    variants.add(s)
-
+    variants = set([s])
+    u = s
+    for _ in range(3):
+        uu = urllib.parse.unquote(u)
+        if uu == u:
+            break
+        u = uu
+        variants.add(u)
+    variants.add(html.unescape(s))
     try:
-        u = s
-        for _ in range(3):
-            uu = urllib.parse.unquote(u)
-            if uu == u:
-                break
-            u = uu
-            variants.add(u)
+        variants.add(bytes(s, "utf-8").decode("unicode_escape"))
     except Exception:
         pass
+    for base in list(variants):
+        variants.add(urllib.parse.quote(base, safe=''))
+        variants.add(html.escape(base))
+        variants.add(''.join([f'\\u{ord(c):04x}' for c in base]))
+        variants.add(urllib.parse.quote(urllib.parse.quote(base, safe=''), safe=''))
+    return {x for x in variants if x}
 
+def decode_unicode_escapes(s):
     try:
-        he = html.unescape(s)
-        variants.add(he)
+        return bytes(s, "utf-8").decode("unicode_escape")
     except Exception:
-        pass
+        return s
 
-    try:
-        ue = bytes(s, "utf-8").decode("unicode_escape")
-        variants.add(ue)
-    except Exception:
-        pass
+def fully_decode_url(s):
+    u = s
+    for _ in range(3):
+        uu = urllib.parse.unquote(u)
+        if uu == u:
+            break
+        u = uu
+    return u
 
-    base_candidates = list(variants)
-    for base in base_candidates:
-        try:
-            variants.add(urllib.parse.quote(base, safe=''))
-        except Exception:
-            pass
-        try:
-            variants.add(html.escape(base))
-        except Exception:
-            pass
-        try:
-            unicode_esc = ''.join([f'\\u{ord(c):04x}' for c in base])
-            variants.add(unicode_esc)
-        except Exception:
-            pass
-        try:
-            variants.add(urllib.parse.quote(urllib.parse.quote(base, safe=''), safe=''))
-        except Exception:
-            pass
-
-    for v in list(variants):
-        if len(v) > 6:
-            variants.add(v[:6])
-            variants.add(v[-6:])
-
-    return {x for x in variants if x is not None and x != ""}
-
+# ----------------- Scanner XSS -----------------
 def scanner_xss(urls, payloads, max_workers=10):
     results = []
 
@@ -117,7 +99,7 @@ def scanner_xss(urls, payloads, max_workers=10):
                 "url": url,
                 "payload": payload_value,
                 "status": response.status_code,
-                "content": response.text.lower()
+                "content": response.text
             })
             color = Fore.RED if response.status_code == 200 else Fore.CYAN
             print(color + f"[+] {rtype} {url} Status: {response.status_code}" + Style.RESET_ALL)
@@ -126,99 +108,82 @@ def scanner_xss(urls, payloads, max_workers=10):
 
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
         futures = []
-
         for url in urls:
             parsed = urllib.parse.urlparse(url)
             base_url = f"{parsed.scheme}://{parsed.netloc}{parsed.path}"
             query_params = urllib.parse.parse_qs(parsed.query)
-
             for param in query_params:
                 for payload in payloads:
                     for encoded_payload in generate_encodings(payload):
-                        # GET
                         query_params[param][0] = encoded_payload
                         new_query = urllib.parse.urlencode(query_params, doseq=True)
                         inject_url = f"{base_url}?{new_query}"
                         futures.append(executor.submit(send_request, "GET", inject_url, None, encoded_payload))
-
-                        # POST
                         post_data = {p: (encoded_payload if p == param else query_params[p][0]) for p in query_params}
                         futures.append(executor.submit(send_request, "POST", base_url, post_data, encoded_payload))
-
-        # انتظار جميع الـ futures
         for _ in as_completed(futures):
             pass
-
     return results
 
+# ----------------- Analysis -----------------
 def analysis_response(results, payloads):
     for r in results:
         content_raw = r.get("content", "")
-        content_compact = re.sub(r'\s+', '', content_raw).lower()
-        content_full = content_raw.lower()
-
+        content_full = decode_unicode_escapes(content_raw)
         url = r.get("url")
         payload_used = (r.get("payload") or "").strip()
-        payload_l = payload_used.lower()
+        if not payload_used:
+            continue
 
-        variants = _generate_detection_variants(payload_used)
-
+        payload_decoded = decode_unicode_escapes(fully_decode_url(payload_used))
+        variants = _generate_detection_variants(payload_decoded)
         found_variant = None
-        found_in = None  # 'compact' or 'full'
-
         for v in variants:
-            v_low = v.lower()
-            if v_low in content_compact:
+            if v in content_full:
                 found_variant = v
-                found_in = "compact"
                 break
-            if v_low in content_full:
-                found_variant = v
-                found_in = "full"
-                break
-
         if not found_variant:
             continue
 
-        high_risk = medium_risk = low_risk = False
-        escaped_payload_for_regex = re.escape(found_variant)
+        idx = content_full.find(found_variant)
+        if idx != -1:
+            start = max(idx - 50, 0)
+            end = min(idx + len(found_variant) + 50, len(content_full))
+            snippet = content_full[start:end].replace('\n', ' ').replace('\r', '')
+        else:
+            snippet = ""
 
+        # تحديد مستوى الخطورة
         high_patterns = [
-            r"<script[^>]*?>.*?" + escaped_payload_for_regex + r".*?</script>",
-            r"on\w+\s*=\s*['\"].*?" + escaped_payload_for_regex + r".*?['\"]",
-            r"href\s*=\s*['\"]javascript:.*?" + escaped_payload_for_regex + r".*?['\"]",
-            r"style\s*=\s*['\"].*?expression\(.*?" + escaped_payload_for_regex + r".*?\).*?['\"]",
-            r"(src|data)\s*=\s*['\"]data:text/html.*?" + escaped_payload_for_regex + r".*?['\"]",
-            r"var\s+\w+\s*=\s*['\"].*?" + escaped_payload_for_regex + r".*?['\"]"
+            r"<script[^>]*?>.*?" + re.escape(found_variant) + r".*?</script>",
+            r"on\w+\s*=\s*['\"].*?" + re.escape(found_variant) + r".*?['\"]",
+            r"href\s*=\s*['\"]javascript:.*?" + re.escape(found_variant) + r".*?['\"]",
+            r"style\s*=\s*['\"].*?expression\(.*?" + re.escape(found_variant) + r".*?\).*?['\"]",
+            r"(src|data)\s*=\s*['\"]data:text/html.*?" + re.escape(found_variant) + r".*?['\"]",
+            r"var\s+\w+\s*=\s*['\"].*?" + re.escape(found_variant) + r".*?['\"]"
         ]
+        high_risk = any(re.search(p, content_full, re.IGNORECASE | re.DOTALL) for p in high_patterns)
+        low_risk = (re.escape(html.escape(payload_used)) in content_full) or ('\\' + payload_used) in content_full
+        medium_risk = not high_risk and not low_risk
 
-        match_snippet = ""
+        # تحديد لون الطباعة
+        if high_risk:
+            color_main = Fore.RED
+        elif medium_risk:
+            color_main = Fore.YELLOW
+        else:
+            color_main = Fore.MAGENTA
 
-        if re.search(re.escape(html.escape(found_variant)), content_full) or ('\\' + found_variant) in content_full:
-            low_risk = True
+        # تمييز الـ payload داخل snippet
+        snippet_colored = snippet.replace(found_variant, color_main + found_variant + Style.RESET_ALL)
 
-        for pattern in high_patterns:
-            match = re.search(pattern, content_full, re.IGNORECASE | re.DOTALL)
-            if match:
-                high_risk = True
-                start = max(match.start() - 60, 0)
-                end = min(match.end() + 60, len(content_full))
-                match_snippet = content_full[start:end]
-                break
-
-        if not high_risk and not low_risk:
-            medium_risk = True
-            idx = content_full.find(found_variant.lower())
-            if idx != -1:
-                start = max(idx - 60, 0)
-                end = min(idx + len(found_variant) + 60, len(content_full))
-                match_snippet = content_full[start:end]
-
+        # تحديد ترميز payload
         encoding_label = "unknown"
         try:
+            decoded_once = urllib.parse.unquote(payload_used)
             if found_variant == payload_used:
                 encoding_label = "original"
-            elif urllib.parse.unquote(found_variant) == payload_used:
+            elif decoded_once == payload_used:
                 encoding_label = "url-decoded"
             elif html.unescape(found_variant) == payload_used:
                 encoding_label = "html-unescaped"
@@ -228,18 +193,9 @@ def analysis_response(results, payloads):
                 encoding_label = "url-encoded"
             elif html.escape(payload_used) == found_variant:
                 encoding_label = "html-escaped"
-            else:
-                if urllib.parse.unquote(found_variant) != found_variant:
-                    encoding_label = "some-url-encoding"
         except Exception:
-            encoding_label = "detected-variant"
+            pass
 
-        if high_risk:
-            print(Fore.RED + f"[HIGH] Payload detected (encoded as: {encoding_label}): {payload_used} in {url}" + Style.RESET_ALL)
-            print(Fore.YELLOW + f" Evidence snippet: {match_snippet}" + Style.RESET_ALL)
-        elif medium_risk:
-            print(Fore.YELLOW + f"[MEDIUM] Payload detected (encoded as: {encoding_label}): {payload_used} in {url}" + Style.RESET_ALL)
-            print(Fore.CYAN + f" Evidence snippet: {match_snippet}" + Style.RESET_ALL)
-        elif low_risk:
-            print(Fore.MAGENTA + f"[LOW/ESCAPED] Payload detected (encoded/escaped as: {encoding_label}): {payload_used} in {url}" + Style.RESET_ALL)
-            print(Fore.CYAN + f" Evidence snippet: {match_snippet}" + Style.RESET_ALL)
+        # الطباعة النهائية
+        print(color_main + f"[DETECTED] Payload detected (encoded as: {encoding_label}): {payload_used} in {url}" + Style.RESET_ALL)
+        print(Fore.YELLOW + f" Evidence snippet: ...{snippet_colored}..." + Style.RESET_ALL)
