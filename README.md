@@ -1,7 +1,7 @@
-# XSS Scanner (Async)
+# XSS Scanner (Advanced Python Tool)
 
 ## 📌 Description
-XSS Scanner (Advanced Python Tool)
+
 
 XSS Scanner is an advanced Python tool designed for automated detection of Reflected, Stored, and basic DOM-based XSS vulnerabilities. It supports multiple payload encodings, concurrent requests, and provides risk classification with evidence snippets.
 
@@ -46,6 +46,7 @@ Simply provide your URLs file and payloads file, then run:
 
 ```bash
 python sonik.py -l urls.txt -p moon.txt
+
 
 
 
