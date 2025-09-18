@@ -2,8 +2,12 @@ import html
 import re
 import urllib.parse
 from urllib.parse import urlparse
-from requests_futures.sessions import FuturesSession
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from colorama import Fore, Style
+
+from requests_html import HTMLSession
+
+import requests 
 
 
 def load_payloads(file_path):
@@ -22,103 +26,130 @@ def load_urls(file_path):
             if parsed.query:
                 urls.append(url)
     return urls
+    
+def scanner_Dom(urls):
+    session =HTMLSession()
+    for url in urls : 
+       try : 
+          r =session.get(url , timeout=10) 
+          r.html.render(sleep=1)
+          print(f"\nScanning {url}")
+          for input_el in r.html.find("input"):
+               print("Input found:", input_el.attrs)
+       except Exception as e:
+            print(f"Error with {url}: {e}")
+    
+
+def generate_encodings(payload):
+    encoded_payloads = [
+        payload,                        # original
+        urllib.parse.quote(payload),     # URL encoded
+        html.escape(payload),            # HTML encoded
+        ''.join([f'\\u{ord(c):04x}' for c in payload])  # Unicode encoded
+    ]
+    return encoded_payloads
 
 
-def scanner_xss(urls, payloads):
-    session = FuturesSession(max_workers=10)
-    futures = []
-    results = []
+def _generate_detection_variants(s):
+    
+    
+    variants = set()
+    
+    variants.add(s)
 
-    for url in urls:
-        parsed = urllib.parse.urlparse(url)
-        base_url = f"{parsed.scheme}://{parsed.netloc}{parsed.path}"
-        query_params = urllib.parse.parse_qs(parsed.query)
+    
+    try:
+        u = s
+        for _ in range(3):
+            uu = urllib.parse.unquote(u)
+            if uu == u:
+                break
+            u = uu
+            variants.add(u)
+    except Exception:
+        pass
 
-        for param in query_params:
-            for payload in payloads:
-                query_params[param][0] = payload
-                new_query = urllib.parse.urlencode(query_params, doseq=True)
-                inject_url = f"{base_url}?{new_query}"
+    # html unescape
+    try:
+        he = html.unescape(s)
+        variants.add(he)
+    except Exception:
+        pass
 
-                # GET request
-                future_get = session.get(inject_url, timeout=10)
-                futures.append((future_get, "GET", inject_url, payload))
+    # محاولة فك unicode-escape sequences مثل \u003c
+    try:
+        # ملاحظة: decode('unicode_escape') يمكن يفسر sequences مثل \uXXXX
+        ue = bytes(s, "utf-8").decode("unicode_escape")
+        variants.add(ue)
+    except Exception:
+        pass
 
-                # POST request
-                post_data = {p: (payload if p == param else query_params[p][0]) for p in query_params}
-                future_post = session.post(base_url, data=post_data, timeout=10)
-                futures.append((future_post, "POST", base_url, payload))
 
-    # Collect responses
-    for item in futures:
-        future, rtype, target_url, payload = item[0], item[1], item[2], item[3]
+    base_candidates = list(variants)  # شامل كل اللي لقينا
+    for base in base_candidates:
+        # URL encoded
         try:
-            response = future.result()
-            results.append({
-                "type": rtype,
-                "url": target_url,
-                "payload": payload,
-                "content": response.text.lower()
-            })
-            print(f"[+] {rtype} {target_url} Status: {response.status_code}")
-        except Exception as e:
-            print(Fore.RED + f"[X] {rtype} request error: {e}" + Style.RESET_ALL)
+            variants.add(urllib.parse.quote(base, safe=''))
+        except Exception:
+            pass
+        # HTML escaped
+        try:
+            variants.add(html.escape(base))
+        except Exception:
+            pass
+        # Unicode escaped \uXXXX 
+        try:
+            unicode_esc = ''.join([f'\\u{ord(c):04x}' for c in base])
+            variants.add(unicode_esc)
+        except Exception:
+            pass
+        # double URL encode
+        try:
+            variants.add(urllib.parse.quote(urllib.parse.quote(base, safe=''), safe=''))
+        except Exception:
+            pass
 
-    return results
+    
+    for v in list(variants):
+        if len(v) > 6:
+            variants.add(v[:6])
+            variants.add(v[-6:])
+
+    #
+    return {x for x in variants if x is not None and x != ""}
 
 
 def analysis_response(results, payloads):
+    
+    
+    
     for r in results:
-        content = html.unescape(re.sub(r'\s+', '', r["content"]).strip())
-        url = r["url"]
-        payload = r["payload"].lower()
+        
+        content_raw = r.get("content", "")
 
-        if payload not in content:
-            continue
+        content_compact = re.sub(r'\s+', '', content_raw).lower()
+        content_full = content_raw.lower()
 
-        high_risk = medium_risk = low_risk = False
+        url = r.get("url")
+        payload_used = (r.get("payload") or "").strip()
+        payload_l = payload_used.lower()
 
-        high_patterns = [
-            r"<script.*?>.*?" + re.escape(payload) + r".*?</script>",
-            r"on\w+\s*=\s*['\"].*?" + re.escape(payload) + r".*?['\"]",
-            r'href\s*=\s*["\']javascript:.*?' + re.escape(payload),
-            r'style\s*=\s*["\'].*?expression\(.*?' + re.escape(payload) + r'.*?\).*?["\']',
-            r'(src|data)\s*=\s*["\']data:text/html.*?' + re.escape(payload) + r'.*?["\']',
-            r'var\s+\w+\s*=\s*["\'].*?' + re.escape(payload) + r'.*?["\']'
-        ]
+        
+        variants = _generate_detection_variants(payload_used)
 
-        # Low risk
-        if re.search(re.escape(html.escape(payload)), content) or '\\' + payload in content:
-            low_risk = True
-
-        # High risk
-        match_snippet = ""
-        for pattern in high_patterns:
-            match = re.search(pattern, content, re.IGNORECASE)
-            if match:
-                high_risk = True
-                start = max(match.start() - 30, 0)
-                end = min(match.end() + 30, len(content))
-                match_snippet = content[start:end]
+        #
+        found_variant = None
+        found_in = None  # 'compact' or 'full'
+        for v in variants:
+            v_low = v.lower()
+            if v_low in content_compact:
+                found_variant = v
+                found_in = "compact"
+                break
+            if v_low in content_full:
+                found_variant = v
+                found_in = "full"
                 break
 
-        # Medium fallback
-        if not high_risk and not low_risk:
-            medium_risk = True
-            snippet_index = content.find(payload)
-            if snippet_index != -1:
-                start = max(snippet_index - 30, 0)
-                end = min(snippet_index + len(payload) + 30, len(content))
-                match_snippet = content[start:end]
-
-        # Print results with URL + snippet
-        if high_risk:
-            print(Fore.RED + f"[HIGH] Payload detected: {payload} in {url}"+ Style.RESET_ALL +"\n" + Fore.YELLOW +f" Evidence : {match_snippet}" + Style.RESET_ALL)
-        elif medium_risk:
-            print(Fore.YELLOW + f"[MEDIUM] Payload detected: {payload} in {url}" +Style.RESET_ALL + "\n" + Fore.CYAN + f"Evidence:{match_snippet} " + Style.RESET_ALL)
-        elif low_risk:
-            print(Fore.GREEN + f"[LOW/IGNORED] Payload detected (encoded/escaped): {payload} in {url}" + "\n" + Fore.ORANGE + " Evidence:{match_snippet} " + Style.RESET_ALL)  
-
-
-
-
+        
+        if not found_variant:
