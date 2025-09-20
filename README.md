@@ -1,33 +1,26 @@
 # XSS Scanner (Advanced Python Tool)
 
 ## 📌 Description
+Short description
+A practical Python XSS scanner that injects payloads into URL parameters (GET/POST), generates multiple encoded variants, renders simple JavaScript-powered pages for basic DOM inspection, and performs robust detection by decoding and matching multiple payload forms. Outputs colorized, prioritized findings with evidence snippets.
 
+Key features
 
-XSS Scanner is an advanced Python tool designed for automated detection of Reflected, Stored, and basic DOM-based XSS vulnerabilities. It supports multiple payload encodings, concurrent requests, and provides risk classification with evidence snippets.
+GET & POST parameter injection for every query parameter found.
 
-## Features
+Multiple payload encodings: original, URL-encoded, HTML-escaped, Unicode-escaped, double encodings.
 
-GET & POST Injection: Automatically injects payloads into URL parameters and POST data.
+Advanced detection variants: automatic URL-decoding, HTML-unescape, unicode-escape decoding, and many derived variants for robust matching.
 
-Multiple Payload Encodings: Supports URL encoding, HTML escaping, Unicode escaping, and double encodings.
+Basic DOM inspection via requests_html (renders pages and lists input elements).
 
-DOM Analysis: Uses requests_html to render JavaScript and detect input fields for potential XSS injection.
+Concurrent scanning using ThreadPoolExecutor for faster testing across many targets.
 
-Risk Classification: Categorizes findings as HIGH, MEDIUM, or LOW risk with snippets from responses.
+Detection logic that matches encoded/decoded payloads inside responses (reduces false negatives).
 
-Concurrent Scanning: Uses multithreading (ThreadPoolExecutor) to speed up scanning across multiple URLs and payloads.
+Colorized terminal output with clear evidence snippets and simple risk classification (HIGH / MEDIUM / LOW/escaped).
 
-Advanced Detection Variants: Generates multiple detection variants for each payload to improve detection accuracy even if payloads are encoded or partially escaped.
-
-Color-Coded Output: Highlights findings in the terminal for easy identification.
-
-## Notes
-
-DOM-based XSS detection is basic; for full JS coverage, use Selenium or Playwright integration.
-
-Designed for penetration testing learning, bug bounty programs, and security research.
-
-⚠️ Only test on websites you have explicit permission to scan.
+Safe failure handling and timeouts to avoid hanging requests.
 ---
 
 ## ⚙️ Installation
@@ -46,6 +39,7 @@ Simply provide your URLs file and payloads file, then run:
 
 ```bash
 python sonik.py -l urls.txt -p moon.txt
+
 
 
 
