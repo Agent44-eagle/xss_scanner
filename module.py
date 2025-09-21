@@ -1,5 +1,5 @@
+# module.py
 import asyncio
-import re
 import html
 import urllib.parse
 from urllib.parse import urlparse
@@ -7,14 +7,10 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from colorama import Fore, Style, init as colorama_init
 from requests_html import HTMLSession
 import requests
+from pyppeteer import launch
 from pyppeteer.errors import NetworkError, PageError, BrowserError
 
 colorama_init(autoreset=True)
-
-# Asyncio exception handler
-def _async_exc_handler(loop, context):
-    print("Asyncio exception:", context.get("message"), context.get("exception"))
-asyncio.get_event_loop().set_exception_handler(_async_exc_handler)
 
 # ----------------- Load payloads / URLs -----------------
 def load_payloads(file_path):
@@ -33,41 +29,54 @@ def load_urls(file_path):
                 urls.append(url)
     return urls
 
-# ----------------- DOM Scanner -----------------
-def scanner_Dom(urls):
-    session = HTMLSession()
+# ----------------- Advanced DOM Scanner (Headless) -----------------
+async def scan_page(url, timeout=30):
+    print(Fore.CYAN + f"\n[+] Launching headless browser for {url}" + Style.RESET_ALL)
+    browser = await launch(headless=True, args=['--no-sandbox'])
+    page = await browser.newPage()
     try:
-        for url in urls:
-            print(f"\nScanning {url}")
-            try:
-                r = session.get(url, timeout=20)
-                if r.status_code != 200:
-                    print(f"Non-200 status: {r.status_code}, skipping render")
-                    continue
-                r.html.render(timeout=60000, sleep=2, keep_page=True)
-                inputs = r.html.find("input")
-                if not inputs:
-                    print("No input elements found.")
-                for input_el in inputs:
-                    print("Input found:", input_el.attrs)
-                    if 'cf-turnstile-response' in input_el.attrs.get('name', ''):
-                        print("-> Detected possible Cloudflare Turnstile input")
-            except (NetworkError, PageError, BrowserError) as e:
-                print(f"Network/Browser error on {url}: {e}. Restarting session...")
-                try:
-                    session.close()
-                except Exception:
-                    pass
-                session = HTMLSession()
-                continue
-            except Exception as e:
-                print(f"Error scanning {url}: {type(e).__name__} - {e}")
-                continue
+        await page.goto(url, {'waitUntil': 'networkidle2', 'timeout': timeout*1000})
+        await page.waitForSelector('input, form, button', {'timeout': timeout*1000})
+
+        # Extract inputs
+        inputs = await page.querySelectorAll('input')
+        for inp in inputs:
+            attrs = await page.evaluate('(el) => { const a={}; for(const attr of el.attributes){a[attr.name]=attr.value;} return a; }', inp)
+            print(Fore.YELLOW + f"Input found: {attrs}" + Style.RESET_ALL)
+            if 'cf-turnstile-response' in attrs.get('name', ''):
+                print(Fore.RED + "-> Cloudflare Turnstile detected!" + Style.RESET_ALL)
+
+        # Extract forms
+        forms = await page.querySelectorAll('form')
+        for frm in forms:
+            attrs = await page.evaluate('(el) => { const a={}; for(const attr of el.attributes){a[attr.name]=attr.value;} return a; }', frm)
+            print(Fore.MAGENTA + f"Form found: {attrs}" + Style.RESET_ALL)
+
+        # Extract buttons
+        buttons = await page.querySelectorAll('button')
+        for btn in buttons:
+            attrs = await page.evaluate('(el) => { const a={}; for(const attr of el.attributes){a[attr.name]=attr.value;} return a; }', btn)
+            print(Fore.CYAN + f"Button found: {attrs}" + Style.RESET_ALL)
+
+        # Extract iframes
+        iframes = await page.querySelectorAll('iframe')
+        for iframe in iframes:
+            src = await page.evaluate('(el) => el.src', iframe)
+            print(Fore.GREEN + f"Iframe src: {src}" + Style.RESET_ALL)
+
+    except (NetworkError, PageError, BrowserError) as e:
+        print(Fore.RED + f"[X] Network/Browser error on {url}: {e}" + Style.RESET_ALL)
+    except Exception as e:
+        print(Fore.RED + f"[X] Error scanning {url}: {type(e).__name__} - {e}" + Style.RESET_ALL)
     finally:
-        try:
-            session.close()
-        except Exception:
-            pass
+        await page.close()
+        await browser.close()
+
+def scanner_Dom_advanced(urls):
+    loop = asyncio.get_event_loop()
+    tasks = [scan_page(url) for url in urls]
+    loop.run_until_complete(asyncio.gather(*tasks))
+
 # ----------------- Encoding Variants -----------------
 def generate_encodings(payload):
     return [
@@ -195,7 +204,6 @@ def analysis_response(results, payloads):
         low_risk = (re.escape(html.escape(payload_used)) in content_full) or ('\\' + payload_used) in content_full
         medium_risk = not high_risk and not low_risk
 
-        # تحديد لون الطباعة
         if high_risk:
             color_main = Fore.RED
         elif medium_risk:
@@ -203,10 +211,7 @@ def analysis_response(results, payloads):
         else:
             color_main = Fore.MAGENTA
 
-        # تمييز الـ payload داخل snippet
         snippet_colored = snippet.replace(found_variant, color_main + found_variant + Style.RESET_ALL)
-
-        # تحديد ترميز payload
         encoding_label = "unknown"
         try:
             decoded_once = urllib.parse.unquote(payload_used)
@@ -225,7 +230,5 @@ def analysis_response(results, payloads):
         except Exception:
             pass
 
-        # الطباعة النهائية
         print(color_main + f"[DETECTED] Payload detected (encoded as: {encoding_label}): {payload_used} in {url}" + Style.RESET_ALL)
         print(Fore.YELLOW + f" Evidence snippet: ...{snippet_colored}..." + Style.RESET_ALL)
-
