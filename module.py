@@ -1,13 +1,20 @@
-import html
+import asyncio
 import re
+import html
 import urllib.parse
 from urllib.parse import urlparse
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from colorama import Fore, Style, init
+from colorama import Fore, Style, init as colorama_init
 from requests_html import HTMLSession
 import requests
+from pyppeteer.errors import NetworkError, PageError, BrowserError
 
-init(autoreset=True)
+colorama_init(autoreset=True)
+
+# Asyncio exception handler
+def _async_exc_handler(loop, context):
+    print("Asyncio exception:", context.get("message"), context.get("exception"))
+asyncio.get_event_loop().set_exception_handler(_async_exc_handler)
 
 # ----------------- Load payloads / URLs -----------------
 def load_payloads(file_path):
@@ -29,16 +36,38 @@ def load_urls(file_path):
 # ----------------- DOM Scanner -----------------
 def scanner_Dom(urls):
     session = HTMLSession()
-    for url in urls:
-        try:
-            r = session.get(url, timeout=10)
-            r.html.render(sleep=1)
+    try:
+        for url in urls:
             print(f"\nScanning {url}")
-            for input_el in r.html.find("input"):
-                print("Input found:", input_el.attrs)
-        except Exception as e:
-            print(f"Error with {url}: {e}")
-
+            try:
+                r = session.get(url, timeout=20)
+                if r.status_code != 200:
+                    print(f"Non-200 status: {r.status_code}, skipping render")
+                    continue
+                r.html.render(timeout=60000, sleep=2, keep_page=True)
+                inputs = r.html.find("input")
+                if not inputs:
+                    print("No input elements found.")
+                for input_el in inputs:
+                    print("Input found:", input_el.attrs)
+                    if 'cf-turnstile-response' in input_el.attrs.get('name', ''):
+                        print("-> Detected possible Cloudflare Turnstile input")
+            except (NetworkError, PageError, BrowserError) as e:
+                print(f"Network/Browser error on {url}: {e}. Restarting session...")
+                try:
+                    session.close()
+                except Exception:
+                    pass
+                session = HTMLSession()
+                continue
+            except Exception as e:
+                print(f"Error scanning {url}: {type(e).__name__} - {e}")
+                continue
+    finally:
+        try:
+            session.close()
+        except Exception:
+            pass
 # ----------------- Encoding Variants -----------------
 def generate_encodings(payload):
     return [
@@ -199,3 +228,4 @@ def analysis_response(results, payloads):
         # الطباعة النهائية
         print(color_main + f"[DETECTED] Payload detected (encoded as: {encoding_label}): {payload_used} in {url}" + Style.RESET_ALL)
         print(Fore.YELLOW + f" Evidence snippet: ...{snippet_colored}..." + Style.RESET_ALL)
+
