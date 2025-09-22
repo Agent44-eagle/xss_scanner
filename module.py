@@ -166,6 +166,11 @@ def scanner_xss(urls, payloads, max_workers=10):
 # ----------------- Analysis -----------------
 def analysis_response(results, payloads):
     for r in results:
+        # تجاهل الصفحات المحجوبة
+        if r.get("status") == 403:
+            print(Fore.RED + f"[!] Skipped analysis for {r.get('url')} due to 403 Forbidden" + Style.RESET_ALL)
+            continue
+
         content_raw = r.get("content", "")
         content_full = decode_unicode_escapes(content_raw)
         url = r.get("url")
@@ -191,7 +196,7 @@ def analysis_response(results, payloads):
         else:
             snippet = ""
 
-        # تحديد مستوى الخطورة
+        # تحديد مستوى الخطورة High Risk فقط
         high_patterns = [
             r"<script[^>]*?>.*?" + re.escape(found_variant) + r".*?</script>",
             r"on\w+\s*=\s*['\"].*?" + re.escape(found_variant) + r".*?['\"]",
@@ -201,17 +206,12 @@ def analysis_response(results, payloads):
             r"var\s+\w+\s*=\s*['\"].*?" + re.escape(found_variant) + r".*?['\"]"
         ]
         high_risk = any(re.search(p, content_full, re.IGNORECASE | re.DOTALL) for p in high_patterns)
-        low_risk = (re.escape(html.escape(payload_used)) in content_full) or ('\\' + payload_used) in content_full
-        medium_risk = not high_risk and not low_risk
 
-        if high_risk:
-            color_main = Fore.RED
-        elif medium_risk:
-            color_main = Fore.YELLOW
-        else:
-            color_main = Fore.MAGENTA
+        # تجاهل كل النتائج التي ليست High Risk
+        if not high_risk:
+            continue
 
-        snippet_colored = snippet.replace(found_variant, color_main + found_variant + Style.RESET_ALL)
+        snippet_colored = snippet.replace(found_variant, Fore.RED + found_variant + Style.RESET_ALL)
         encoding_label = "unknown"
         try:
             decoded_once = urllib.parse.unquote(payload_used)
@@ -230,5 +230,5 @@ def analysis_response(results, payloads):
         except Exception:
             pass
 
-        print(color_main + f"[DETECTED] Payload detected (encoded as: {encoding_label}): {payload_used} in {url}" + Style.RESET_ALL)
+        print(Fore.RED + f"[DETECTED] High Risk Payload detected (encoded as: {encoding_label}): {payload_used} in {url}" + Style.RESET_ALL)
         print(Fore.YELLOW + f" Evidence snippet: ...{snippet_colored}..." + Style.RESET_ALL)
