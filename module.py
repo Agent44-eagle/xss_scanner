@@ -9,8 +9,14 @@ from requests_html import HTMLSession
 import requests
 from pyppeteer import launch
 from pyppeteer.errors import NetworkError, PageError, BrowserError
+import urllib3
+import re
 
+# تفعيل الألوان
 colorama_init(autoreset=True)
+
+# تعطيل تحذيرات SSL
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # ----------------- Load payloads / URLs -----------------
 def load_payloads(file_path):
@@ -32,7 +38,7 @@ def load_urls(file_path):
 # ----------------- Advanced DOM Scanner (Headless) -----------------
 async def scan_page(url, timeout=30):
     print(Fore.CYAN + f"\n[+] Launching headless browser for {url}" + Style.RESET_ALL)
-    browser = await launch(headless=True, args=['--no-sandbox'])
+    browser = await launch(headless=True, args=['--no-sandbox'], ignoreHTTPSErrors=True)
     page = await browser.newPage()
     try:
         await page.goto(url, {'waitUntil': 'networkidle2', 'timeout': timeout*1000})
@@ -129,9 +135,9 @@ def scanner_xss(urls, payloads, max_workers=10):
     def send_request(rtype, url, data=None, payload_value=None):
         try:
             if rtype == "GET":
-                response = requests.get(url, timeout=10)
+                response = requests.get(url, timeout=10, verify=False)
             else:
-                response = requests.post(url, data=data, timeout=10)
+                response = requests.post(url, data=data, timeout=10, verify=False)
             results.append({
                 "type": rtype,
                 "url": url,
@@ -196,7 +202,7 @@ def analysis_response(results, payloads):
         else:
             snippet = ""
 
-        # تحديد مستوى الخطورة High Risk فقط
+        # High Risk فقط
         high_patterns = [
             r"<script[^>]*?>.*?" + re.escape(found_variant) + r".*?</script>",
             r"on\w+\s*=\s*['\"].*?" + re.escape(found_variant) + r".*?['\"]",
@@ -206,8 +212,6 @@ def analysis_response(results, payloads):
             r"var\s+\w+\s*=\s*['\"].*?" + re.escape(found_variant) + r".*?['\"]"
         ]
         high_risk = any(re.search(p, content_full, re.IGNORECASE | re.DOTALL) for p in high_patterns)
-
-        # تجاهل كل النتائج التي ليست High Risk
         if not high_risk:
             continue
 
