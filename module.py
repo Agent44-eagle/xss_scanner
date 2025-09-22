@@ -11,6 +11,10 @@ from pyppeteer import launch
 from pyppeteer.errors import NetworkError, PageError, BrowserError
 import urllib3
 import re
+import time
+import random
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 
 # تفعيل الألوان
 colorama_init(autoreset=True)
@@ -75,8 +79,14 @@ async def scan_page(url, timeout=30):
     except Exception as e:
         print(Fore.RED + f"[X] Error scanning {url}: {type(e).__name__} - {e}" + Style.RESET_ALL)
     finally:
-        await page.close()
-        await browser.close()
+        try:
+            await page.close()
+        except Exception:
+            pass
+        try:
+            await browser.close()
+        except Exception:
+            pass
 
 def scanner_Dom_advanced(urls):
     loop = asyncio.get_event_loop()
@@ -129,15 +139,37 @@ def fully_decode_url(s):
     return u
 
 # ----------------- Scanner XSS -----------------
-def scanner_xss(urls, payloads, max_workers=10):
+def scanner_xss(urls, payloads, max_workers=5):
+    """
+    scanner_xss uses a session with retries/backoff to avoid 429.
+    Default max_workers reduced to 5 to be gentler on targets.
+    """
     results = []
+
+    # setup session with retries/backoff
+    session = requests.Session()
+    retries = Retry(total=3,
+                    backoff_factor=1,
+                    status_forcelist=[429, 500, 502, 503, 504],
+                    respect_retry_after_header=True,
+                    allowed_methods=frozenset(['GET', 'POST']))
+    adapter = HTTPAdapter(max_retries=retries)
+    session.mount('https://', adapter)
+    session.mount('http://', adapter)
+
+    headers = {
+        "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0 Safari/537.36"
+    }
 
     def send_request(rtype, url, data=None, payload_value=None):
         try:
+            # small random delay to reduce rate limits
+            time.sleep(random.uniform(0.1, 0.6))
             if rtype == "GET":
-                response = requests.get(url, timeout=10, verify=False)
+                response = session.get(url, timeout=15, verify=False, headers=headers)
             else:
-                response = requests.post(url, data=data, timeout=10, verify=False)
+                response = session.post(url, data=data, timeout=15, verify=False, headers=headers)
+
             results.append({
                 "type": rtype,
                 "url": url,
@@ -145,8 +177,20 @@ def scanner_xss(urls, payloads, max_workers=10):
                 "status": response.status_code,
                 "content": response.text
             })
+
             color = Fore.RED if response.status_code == 200 else Fore.CYAN
             print(color + f"[+] {rtype} {url} Status: {response.status_code}" + Style.RESET_ALL)
+
+            if response.status_code == 429:
+                # respect Retry-After header if present
+                ra = response.headers.get("Retry-After")
+                try:
+                    delay = int(ra) if ra else random.randint(3, 8)
+                except Exception:
+                    delay = random.randint(3, 8)
+                print(Fore.YELLOW + f"[!] Received 429 for {url}, sleeping {delay}s..." + Style.RESET_ALL)
+                time.sleep(delay)
+
         except Exception as e:
             print(Fore.RED + f"[X] {rtype} request error: {e}" + Style.RESET_ALL)
 
@@ -159,10 +203,13 @@ def scanner_xss(urls, payloads, max_workers=10):
             for param in query_params:
                 for payload in payloads:
                     for encoded_payload in generate_encodings(payload):
-                        query_params[param][0] = encoded_payload
-                        new_query = urllib.parse.urlencode(query_params, doseq=True)
+                        # build GET injection
+                        qp_copy = {k: list(v) for k, v in query_params.items()}
+                        qp_copy[param][0] = encoded_payload
+                        new_query = urllib.parse.urlencode(qp_copy, doseq=True)
                         inject_url = f"{base_url}?{new_query}"
                         futures.append(executor.submit(send_request, "GET", inject_url, None, encoded_payload))
+                        # build POST data
                         post_data = {p: (encoded_payload if p == param else query_params[p][0]) for p in query_params}
                         futures.append(executor.submit(send_request, "POST", base_url, post_data, encoded_payload))
         for _ in as_completed(futures):
@@ -172,13 +219,18 @@ def scanner_xss(urls, payloads, max_workers=10):
 # ----------------- Analysis -----------------
 def analysis_response(results, payloads):
     for r in results:
-        # تجاهل الصفحات المحجوبة
-        if r.get("status") == 403:
-            print(Fore.RED + f"[!] Skipped analysis for {r.get('url')} due to 403 Forbidden" + Style.RESET_ALL)
+        status = r.get("status")
+        # تجاهل الصفحات المحجوبة أو المقيّدة
+        if status in (403, 429):
+            print(Fore.RED + f"[!] Skipped analysis for {r.get('url')} due to status {status}" + Style.RESET_ALL)
             continue
 
         content_raw = r.get("content", "")
+        # فك escapes اليونيكود لو كان موجود
         content_full = decode_unicode_escapes(content_raw)
+        # ونسخة unescaped لفلترة الـ high risk context
+        content_unescaped = html.unescape(content_full)
+
         url = r.get("url")
         payload_used = (r.get("payload") or "").strip()
         if not payload_used:
@@ -188,7 +240,7 @@ def analysis_response(results, payloads):
         variants = _generate_detection_variants(payload_decoded)
         found_variant = None
         for v in variants:
-            if v in content_full:
+            if v in content_full or v in content_unescaped:
                 found_variant = v
                 break
         if not found_variant:
@@ -202,7 +254,7 @@ def analysis_response(results, payloads):
         else:
             snippet = ""
 
-        # High Risk فقط
+        # High Risk فقط — طبّق على النسخة unescaped باش تتأكّد من السياق
         high_patterns = [
             r"<script[^>]*?>.*?" + re.escape(found_variant) + r".*?</script>",
             r"on\w+\s*=\s*['\"].*?" + re.escape(found_variant) + r".*?['\"]",
@@ -211,8 +263,9 @@ def analysis_response(results, payloads):
             r"(src|data)\s*=\s*['\"]data:text/html.*?" + re.escape(found_variant) + r".*?['\"]",
             r"var\s+\w+\s*=\s*['\"].*?" + re.escape(found_variant) + r".*?['\"]"
         ]
-        high_risk = any(re.search(p, content_full, re.IGNORECASE | re.DOTALL) for p in high_patterns)
+        high_risk = any(re.search(p, content_unescaped, re.IGNORECASE | re.DOTALL) for p in high_patterns)
         if not high_risk:
+            # Found payload but not in a high-risk context (probably reflected/escaped)
             continue
 
         snippet_colored = snippet.replace(found_variant, Fore.RED + found_variant + Style.RESET_ALL)
